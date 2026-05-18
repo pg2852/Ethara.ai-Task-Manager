@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Task - TaskManager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{navbar :: navbar}"></div>
+
+<div class="container">
+    <div class="form-card card">
+        <h2 style="margin-bottom:1.5rem;">📋 Create New Task</h2>
+        <form method="post" th:action="@{/tasks/create}">
+            <div class="form-group">
+                <label>Task Title</label>
+                <input type="text" name="title" placeholder="e.g. Fix login bug" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" placeholder="What needs to be done?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Priority</label>
+                <select name="priority">
+                    <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Assign To</label>
+                <select name="assignedToId">
+                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName + ' (' + u.role + ')'}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Team</label>
+                <select name="teamId">
+                    <option th:each="t : ${teams}" th:value="${t.id}" th:text="${t.name}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" name="dueDate" required>
+            </div>
+            <div style="display:flex;gap:1rem;">
+                <button type="submit" class="btn btn-primary">Create Task</button>
+                <a th:href="@{/tasks}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

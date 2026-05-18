@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Teams - TaskManager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{navbar :: navbar}"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>👥 Teams</h1>
+        <a th:href="@{/teams/create}" class="btn btn-primary"
+           sec:authorize="hasAnyRole('ADMIN','MANAGER')">+ New Team</a>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr><th>Team Name</th><th>Description</th><th>Manager</th><th>Members</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(teams)}">
+                    <td colspan="5" style="text-align:center;color:#aaa;padding:2rem;">No teams yet</td>
+                </tr>
+                <tr th:each="team : ${teams}">
+                    <td><strong th:text="${team.name}"></strong></td>
+                    <td th:text="${team.description ?: '-'}"></td>
+                    <td th:text="${team.manager?.fullName ?: '-'}"></td>
+                    <td>
+                        <span th:each="m,i : ${team.members}">
+                            <span th:text="${m.fullName}"></span><span th:if="${!i.last}">, </span>
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{/teams/{id}/delete(id=${team.id})}"
+                           class="btn btn-danger btn-sm"
+                           sec:authorize="hasRole('ADMIN')"
+                           onclick="return confirm('Delete this team?')">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

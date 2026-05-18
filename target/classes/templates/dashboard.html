@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - TaskManager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{navbar :: navbar}"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>👋 Hello, <span th:text="${user.fullName}"></span>
+            <span class="badge"
+                  th:classappend="${user.role.name() == 'ADMIN'} ? 'badge-admin' : (${user.role.name() == 'MANAGER'} ? 'badge-manager' : 'badge-member')"
+                  th:text="${user.role}"></span>
+        </h1>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="num" th:text="${tasks != null ? tasks.size() : 0}">0</div>
+            <div class="label">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+            <div class="num"
+                 th:text="${tasks != null ? #lists.size(tasks.?[status.name() == 'TODO']) : 0}">0</div>
+            <div class="label">To Do</div>
+        </div>
+        <div class="stat-card">
+            <div class="num"
+                 th:text="${tasks != null ? #lists.size(tasks.?[status.name() == 'IN_PROGRESS']) : 0}">0</div>
+            <div class="label">In Progress</div>
+        </div>
+        <div class="stat-card">
+            <div class="num"
+                 th:text="${tasks != null ? #lists.size(tasks.?[status.name() == 'DONE']) : 0}">0</div>
+            <div class="label">Done</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" th:text="${teams != null ? teams.size() : 0}">0</div>
+            <div class="label">Teams</div>
+        </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h2>📋 Recent Tasks</h2>
+            <a th:href="@{/tasks}" class="btn btn-secondary btn-sm">View All</a>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Title</th><th>Team</th><th>Priority</th><th>Status</th><th>Due Date</th></tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(tasks)}">
+                    <td colspan="5" style="text-align:center;color:#aaa;padding:2rem;">No tasks yet</td>
+                </tr>
+                <tr th:each="task,iter : ${tasks}" th:if="${iter.index < 5}">
+                    <td th:text="${task.title}"></td>
+                    <td th:text="${task.team?.name ?: '-'}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${task.priority.name() == 'HIGH'} ? 'badge-high' : (${task.priority.name() == 'MEDIUM'} ? 'badge-medium' : 'badge-low')"
+                              th:text="${task.priority}"></span>
+                    </td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${task.status.name() == 'TODO'} ? 'badge-todo' : (${task.status.name() == 'IN_PROGRESS'} ? 'badge-progress' : 'badge-done')"
+                              th:text="${task.status}"></span>
+                    </td>
+                    <td th:text="${task.dueDate}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Teams -->
+    <div class="card" th:if="${teams != null and !#lists.isEmpty(teams)}">
+        <h2>👥 Your Teams</h2>
+        <table>
+            <thead>
+                <tr><th>Team</th><th>Description</th><th>Manager</th><th>Members</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="team : ${teams}">
+                    <td th:text="${team.name}"></td>
+                    <td th:text="${team.description ?: '-'}"></td>
+                    <td th:text="${team.manager?.fullName ?: '-'}"></td>
+                    <td th:text="${team.members.size()}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
